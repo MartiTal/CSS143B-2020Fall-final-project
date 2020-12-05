@@ -15,6 +15,9 @@ public class IndexerImpl implements Indexer {
 
             for (int pos = 0; pos < words.length; pos++) { //Check each word in each document
 
+                if (words[pos].length() == 0) //In the case of a document being an empty String (test case)
+                    break;
+
                 if (!(indexes.containsKey(words[pos]))) { //Check to see if the index for this word has already been created
 
                     List<List<Integer>> documents = new ArrayList<>(docs.size());
