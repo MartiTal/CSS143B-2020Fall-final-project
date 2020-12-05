@@ -2,20 +2,24 @@ package edu.uwb.css143b2020fall.service;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class IndexerImpl implements Indexer {
     public Map<String, List<List<Integer>>> index(List<String> docs) {
         Map<String, List<List<Integer>>> indexes = new HashMap<>();
         // add your code
-        for (String doc : docs) {
-            String[] words = doc.trim().split("\\s+");
+        for (int docnumber = 0; docnumber < docs.size(); docnumber++) {
+
+            String[] words = docs.get(docnumber).trim().split("\\s+");
+
             for (int i = 0; i < words.length; i++) {
-                indexes.put(words[i], );
+                List<List<Integer>> document = new ArrayList<>(docs.size());
+                List<Integer> location = new ArrayList<>();
+
+                location.add(i);
+                document.add(docnumber, location);
+                indexes.put(words[i], document);
             }
         }
         return indexes;
