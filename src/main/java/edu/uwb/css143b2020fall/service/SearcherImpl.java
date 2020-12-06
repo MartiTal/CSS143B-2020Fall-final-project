@@ -71,7 +71,7 @@ public class SearcherImpl implements Searcher {
 
             Map<Integer, Integer> wordCorrectOrderFinder = new HashMap<>();
 
-            for (int i = 0; i < docList.get(key).size(); i++) { //i represent the amount we need to decrement each "column" so we can check if the words are in the right order
+            for (int i = 0; i < docList.get(key).size(); i++) { //i represents the amount we need to decrement each "column" so we can check if the words are in the right order
                 for (int pos : docList.get(key).get(i)) {
                     //docList.get(key).get(i).add(i, pos - i);
                     //wordCorrectOrderFinder.put(key, pos - i);
@@ -84,8 +84,11 @@ public class SearcherImpl implements Searcher {
             }
 
             for (int i : wordCorrectOrderFinder.keySet()) {
-                if (wordCorrectOrderFinder.get(i) == searchedWords.length) //Verify if the number of different words found in a document is the same as the number of different words in the search
+                if (wordCorrectOrderFinder.get(i) == searchedWords.length) { //Verify if the number of different words found in a document is the same as the number of different words in the search
                     result.add(key); //To be done if words are finally found to be in the same document, and in the right order
+                    break; //This is to prevent the same document from being added to the result array twice, in the event that the search phrase shows up in the same document twice
+                }
+
             }
 
         }
