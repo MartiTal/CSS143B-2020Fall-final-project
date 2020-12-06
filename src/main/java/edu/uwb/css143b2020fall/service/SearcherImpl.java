@@ -21,6 +21,7 @@ public class SearcherImpl implements Searcher {
         if (searchedWords.length == 1) { //In case of a one-word search
 
             if (searchedWords[0].length() != 0) { //This code will not execute in the case of a search phrase being an empty String (test case)
+                if (index.get(searchedWords[0]) != null) //To avoid NullPointerException if this word does not have an index
                 for (int i = 0; i < index.get(searchedWords[0]).size(); i++) {
                     if ( !(index.get(searchedWords[0]).get(i).isEmpty()) )
                         result.add(i); //Essentially, we will just return each document that does not have an empty list in this word's index
@@ -56,10 +57,10 @@ public class SearcherImpl implements Searcher {
                commonDocs.add(i);
         }
 
-        Map<Integer, List<List<Integer>>> docList = new HashMap<>();
+        Map<Integer, List<List<Integer>>> docList = new HashMap<>(); //Will house the positions of each word in the search within their common documents only (document # stored as key)
 
         for (int i: commonDocs) {
-            List<List<Integer>> poslist = new ArrayList<>();
+            List<List<Integer>> poslist = new ArrayList<>(); //A List containing the List positions of each word in the search
             for (String s : searchedWords) {
                 poslist.add(index.get(s).get(i));
             }
@@ -67,14 +68,25 @@ public class SearcherImpl implements Searcher {
         }
 
         for (int key : docList.keySet()) {
-            for (int i = 0; i < docList.get(key).size(); i++) {
-                for (int pos : docList.get(key).get(i)) { //Decrement each "column" so we can check if the words are in the right order
-                    docList.get(key).get(i).add(i, pos - i);
+
+            Map<Integer, Integer> wordCorrectOrderFinder = new HashMap<>();
+
+            for (int i = 0; i < docList.get(key).size(); i++) { //i represent the amount we need to decrement each "column" so we can check if the words are in the right order
+                for (int pos : docList.get(key).get(i)) {
+                    //docList.get(key).get(i).add(i, pos - i);
+                    //wordCorrectOrderFinder.put(key, pos - i);
+                    if (wordCorrectOrderFinder.containsKey(pos - i)) { //If we have already stored this value, increment instead
+                        wordCorrectOrderFinder.put(pos - i, wordCorrectOrderFinder.get(pos - i) + 1);
+                    } else {
+                        wordCorrectOrderFinder.put(pos - i, 1);
+                    }
                 }
             }
 
-
-            result.add(key); //To be done if words are found to be in the same document, and in the right order
+            for (int i : wordCorrectOrderFinder.keySet()) {
+                if (wordCorrectOrderFinder.get(i) == searchedWords.length) //Verify if the number of different words found in a document is the same as the number of different words in the search
+                    result.add(key); //To be done if words are finally found to be in the same document, and in the right order
+            }
 
         }
 
