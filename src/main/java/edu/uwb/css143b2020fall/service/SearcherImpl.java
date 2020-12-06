@@ -33,9 +33,11 @@ public class SearcherImpl implements Searcher {
         Map<Integer, Integer> commonDocFinder = new HashMap<>(); //Find the common documents where every word in the search exists
 
         for (int i = 0; i < searchedWords.length; i++) { //Each word in the phrase search
+
             if (index.get(searchedWords[i]) != null) //To avoid NullPointerException if this word happens to not be found anywhere
                 for (int j = 0; j < index.get(searchedWords[i]).size(); j++) { //Check each document to see if it contains said word somewhere
                     if ( !(index.get(searchedWords[i]).get(j).isEmpty()) ) {
+
                         if (commonDocFinder.containsKey(j)) { //If this document was already found to have a word in it, increment its value in the HashMap instead
                             commonDocFinder.put(j, commonDocFinder.get(j) + 1);
                         } else {
@@ -44,13 +46,36 @@ public class SearcherImpl implements Searcher {
 
                     }
                 }
+
         }
 
-        List<Integer> commonDocs = new ArrayList<>();
+        List<Integer> commonDocs = new ArrayList<>(); //Will be a list of all the document #'s that contain all of the searched words
 
         for (int i : commonDocFinder.keySet()) {
-            if (commonDocFinder.get(i) == searchedWords.length)
+            if (commonDocFinder.get(i) == searchedWords.length) //Verify if the number of different words found in a document is the same as the number of different words in the search
                commonDocs.add(i);
+        }
+
+        Map<Integer, List<List<Integer>>> docList = new HashMap<>();
+
+        for (int i: commonDocs) {
+            List<List<Integer>> poslist = new ArrayList<>();
+            for (String s : searchedWords) {
+                poslist.add(index.get(s).get(i));
+            }
+            docList.put(i, poslist);
+        }
+
+        for (int key : docList.keySet()) {
+            for (int i = 0; i < docList.get(key).size(); i++) {
+                for (int pos : docList.get(key).get(i)) { //Decrement each "column" so we can check if the words are in the right order
+                    docList.get(key).get(i).add(i, pos - i);
+                }
+            }
+
+
+            result.add(key); //To be done if words are found to be in the same document, and in the right order
+
         }
 
         return result;
