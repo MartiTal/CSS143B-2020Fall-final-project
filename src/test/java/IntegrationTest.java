@@ -34,6 +34,57 @@ public class IntegrationTest {
         }
     }
 
+    @Test
+    public void newIntegrationTest() {
+        List<String> newdocuments = new ArrayList<>( //New documents for this test ;)
+                Arrays.asList(
+                        "never gonna give you up",
+                        "never gonna let you down",
+                        "never gonna run around and desert you",
+                        "never gonna make you cry",
+                        "never gonna say goodbye",
+                        "never gonna tell a lie and hurt you"
+                )
+        );
+
+        List<TestCase> testCases = new ArrayList<>(Arrays.asList( //Search phrases
+                new TestCase(
+                        newdocuments,
+                        "never gonna",
+                        new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5))
+                ),
+                new TestCase(
+                        newdocuments,
+                        "you",
+                        new ArrayList<>(Arrays.asList(0, 1, 2, 3, 5))
+                ),
+                new TestCase(
+                        newdocuments,
+                        "and you",
+                        Util.emptyResult()
+                ),
+                new TestCase(
+                        newdocuments,
+                        "gonna run",
+                        new ArrayList<>(Arrays.asList(2))
+                ),
+                new TestCase(
+                        newdocuments,
+                        "tell a lie and",
+                        new ArrayList<>(Arrays.asList(5))
+                )
+        ));
+
+        for (TestCase testCase : testCases) { //The actual test
+            List<Integer> actual = searcher.search(
+                    testCase.target,
+                    indexer.index(testCase.documents)
+            );
+            assertEquals(testCase.expect, actual);
+        }
+
+    }
+
     private List<TestCase> getTestCase() {
         List<String> documents = Util.getDocumentsForIntTest();
 
